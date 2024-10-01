@@ -3,6 +3,7 @@ package Games;
 import UI.CellButton;
 import UI.GameFrame;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class OnePlayer extends GameFrame {
@@ -14,12 +15,15 @@ public class OnePlayer extends GameFrame {
 
     @Override
     public boolean onCellClick(CellButton cell) {
-        System.out.println("clicked");
-        if (cell.getChar() != ' ') {
+        if (!cell.isEmpty()) {
             return false;
         }
         cell.setText("o");
         Random r = new Random();
+        boolean diagonalPosReplace = true;
+        int diagonalPosSpace = -1;
+        boolean diagonalNegReplace = true;
+        int diagonalNegSpace = -1;
         for (int i=0; i<size; i++) {
             int space = -1;
             boolean replace = true;
@@ -42,7 +46,7 @@ public class OnePlayer extends GameFrame {
             replace = true;
             for (int j=0; j<size; j++) {
                 if (cells[j][i].getChar() != cell.getChar()) {
-                    if (cells[j][i].getChar() == ' ' && space == -1) {
+                    if (cells[j][i].isEmpty() && space == -1) {
                         space = j;
                     } else {
                         replace = false;
@@ -54,22 +58,42 @@ public class OnePlayer extends GameFrame {
                 cells[space][i].setText("x");
                 return true;
             }
-        }
-        CellButton mark;
-        do {
-            boolean nospace = true;
-            for (CellButton[] cr : cells) {
-                for (CellButton c: cr) {
-                    if (c.getChar() == ' ') {
-                        nospace = false;
-                        break;
+
+            if (diagonalPosReplace) {
+                if (cells[(size-1)-i][i].getChar() != cell.getChar()) {
+                    if (cells[(size-1)-i][i].isEmpty() && diagonalPosSpace == -1) {
+                        diagonalPosSpace = i;
+                    } else {
+                        diagonalPosReplace = false;
                     }
                 }
             }
-            mark = cells[r.nextInt(size)][r.nextInt(size)];
-        } while (mark.getChar() != ' ');
-        mark.setText("x");
-        return true;
+
+            if (diagonalNegReplace) {
+                if (cells[i][i].getChar() != cell.getChar()) {
+                    if (cells[i][i].isEmpty() && diagonalNegSpace == -1) {
+                        diagonalNegSpace = i;
+                    } else {
+                        diagonalNegReplace = false;
+                    }
+                }
+            }
+        }
+
+        if (diagonalPosReplace) {
+            cells[(size-1)-diagonalPosSpace][diagonalPosSpace].setText("x");
+            return true;
+        }
+        if (diagonalNegReplace) {
+            cells[diagonalNegSpace][diagonalNegSpace].setText("x");
+            return true;
+        }
+        ArrayList<CellButton> emptyCells = getEmptyCells();
+        if (!emptyCells.isEmpty()) {
+            emptyCells.get(r.nextInt(emptyCells.size())).setText("x");
+            return true;
+        }
+        return false;
     }
     
     public static void main(String[] args) {

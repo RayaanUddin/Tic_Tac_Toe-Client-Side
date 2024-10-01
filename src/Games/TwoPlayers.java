@@ -12,6 +12,9 @@ public class TwoPlayers extends GameFrame {
 
     @Override
     public boolean onCellClick(CellButton cell) {
+        if (!cell.isEmpty()) {
+            return false;
+        }
         cell.setText(Character.toString(turn));
         switch (turn) {
             case 'o': turn = 'x'; break;

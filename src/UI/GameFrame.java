@@ -2,6 +2,7 @@ package UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class GameFrame extends JFrame {
     final public CellButton[][] cells;
@@ -57,10 +58,7 @@ public abstract class GameFrame extends JFrame {
                     if (cell.getText().equals(" ") || cell.getText().isEmpty()) {
                         return;
                     }
-                    System.out.println();
-
                     Character winner = onCellChange(cell);
-                    System.out.println(winner);
                     if (winner != null) {
                         win(winner);
                     }
@@ -75,8 +73,8 @@ public abstract class GameFrame extends JFrame {
 
     public Character onCellChange(CellButton cell) {
         final char cell_char = cell.getChar();
-        boolean winner = true;
         // Horizontal Win
+        boolean winner = true;
         for (CellButton c : cells[cell.row]) {
             if (c.getChar() != cell_char) {
                 winner = false;
@@ -89,8 +87,8 @@ public abstract class GameFrame extends JFrame {
             }
             return cell_char;
         }
-        winner = true;
         // Vertical Win
+        winner = true;
         for (int i=0; i<size; i++) {
             if (cells[i][cell.column].getChar() != cell_char) {
                 winner = false;
@@ -103,6 +101,7 @@ public abstract class GameFrame extends JFrame {
             }
             return cell_char;
         }
+
         // Diagonal Win
         if (cells[1][1].getChar() == cell_char) {
             if (cells[0][0].getChar() == cell_char && cells[size-1][size-1].getChar() == cell_char) {
@@ -115,11 +114,21 @@ public abstract class GameFrame extends JFrame {
                 return cell_char;
             }
         }
+
+        // Draw
+        if (getEmptyCells().isEmpty()) {
+            return 'd';
+        }
+
         return null;
     }
 
     public void win(char winner) {
-        JOptionPane.showMessageDialog(this,"Winner is " + winner);
+        if (winner == 'd') {
+            JOptionPane.showMessageDialog(this, "Draw");
+        } else {
+            JOptionPane.showMessageDialog(this, "Winner is " + winner);
+        }
         for (CellButton[] c1 : cells) {
             for (CellButton c2 : c1) {
                 c2.setForeground(Color.BLACK);
@@ -130,5 +139,17 @@ public abstract class GameFrame extends JFrame {
 
     public boolean onCellClick(CellButton cell) {
         return false;
+    }
+
+    public ArrayList<CellButton> getEmptyCells() {
+        ArrayList<CellButton> res = new ArrayList<>();
+        for (CellButton[] cellRow : cells) {
+            for (CellButton cell : cellRow) {
+                if (cell.isEmpty()) {
+                    res.add(cell);
+                }
+            }
+        }
+        return res;
     }
 }

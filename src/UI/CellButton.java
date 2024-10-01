@@ -21,4 +21,11 @@ public class CellButton extends JButton {
     public char toChar() {
         return getText().charAt(0);
     }
+
+    public boolean isEmpty() {
+        if (getChar() ==' ' || getText().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }
